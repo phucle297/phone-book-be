@@ -12,6 +12,9 @@ const sequelize = new Sequelize(
     host: config.HOST,
     dialect: config.DIALECT,
     port: config.PORT,
+    query: {
+      raw: true,
+    },
   }
 );
 

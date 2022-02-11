@@ -5,9 +5,8 @@ const EXPIRES_IN = 60 * 60 * 24 * 30; //? seconds*minutes*hours*days
 
 const generateToken = (user) => {
   const payload = {
-    taiKhoan: user.taiKhoan,
     email: user.email,
-    maLoaiNguoiDung: user.maLoaiNguoiDung,
+    role: user.role,
   };
   const token = jwt.sign(payload, config.SECRET_KEY, {
     expiresIn: EXPIRES_IN,

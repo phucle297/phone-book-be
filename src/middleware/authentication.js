@@ -32,11 +32,11 @@ const authenticate = async (req, res, next) => {
 const authorize =
   (...allowRoles) =>
   async (req, res, next) => {
-    let maLoaiNguoiDung;
+    let role;
     await verifyToken(req).then(
-      (decoded) => (maLoaiNguoiDung = decoded.maLoaiNguoiDung)
+      (decoded) => (role = decoded.role)
     );
-    if (!allowRoles.includes(maLoaiNguoiDung))
+    if (!allowRoles.includes(role))
       return res.status(403).json(403, "Forbidden");
     next();
   };

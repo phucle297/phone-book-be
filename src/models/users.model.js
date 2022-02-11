@@ -47,6 +47,10 @@ module.exports = (sequelize) => {
         allowNull: false,
         defaultValue: "User",
       },
+      avatar: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
       companyId: {
         type: DataTypes.INTEGER,
         allowNull: false,
