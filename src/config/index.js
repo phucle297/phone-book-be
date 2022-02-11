@@ -19,6 +19,8 @@ const RDS_PASSWORD = process.env.RDS_PASSWORD;
 const SSH_TUNNEL_HOST = process.env.SSH_TUNNEL_HOST;
 const SSH_TUNNEL_PORT = process.env.SSH_TUNNEL_PORT;
 const SSH_TUNNEL_USERNAME = process.env.SSH_TUNNEL_USERNAME;
+const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
+const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
 module.exports = {
   DATABASE,
   USERNAME,
@@ -39,4 +41,6 @@ module.exports = {
   SSH_TUNNEL_HOST,
   SSH_TUNNEL_PORT,
   SSH_TUNNEL_USERNAME,
+  TWILIO_ACCOUNT_SID,
+  TWILIO_AUTH_TOKEN,
 };

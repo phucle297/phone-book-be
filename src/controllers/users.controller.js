@@ -1,6 +1,7 @@
 const db = require("../models");
 const bcrypt = require("bcrypt");
 const { generateToken } = require("../utils/jwt");
+
 const getAll = async (req, res) => {
   try {
     const users = await db.Users.findAll({
