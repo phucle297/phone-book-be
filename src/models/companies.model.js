@@ -24,7 +24,7 @@ module.exports = (sequelize) => {
       },
       manager: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
       },
     },
     {
