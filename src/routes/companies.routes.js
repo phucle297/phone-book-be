@@ -8,17 +8,17 @@ const upload = multer({ storage });
 
 companiesRoutes.post(
   "/create",
-  authorize("CANNOT_USE"),
+  // authorize("CANNOT_USE"),
   companiesControllers.createCompany
 );
 companiesRoutes.get(
   "/get-all",
-  authorize("CANNOT_USE"),
+  // authorize("CANNOT_USE"),
   companiesControllers.getAll
 );
 companiesRoutes.get(
   "/get-by-id/:companyId",
-  authorize("CANNOT_USE"),
+  // authorize("CANNOT_USE"),
   companiesControllers.getById
 );
 companiesRoutes.put(

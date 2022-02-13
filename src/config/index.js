@@ -21,6 +21,8 @@ const SSH_TUNNEL_PORT = process.env.SSH_TUNNEL_PORT;
 const SSH_TUNNEL_USERNAME = process.env.SSH_TUNNEL_USERNAME;
 const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
+const NEXMO_API_KEY = process.env.NEXMO_API_KEY;
+const NEXMO_API_SECRET = process.env.NEXMO_API_SECRET;
 module.exports = {
   DATABASE,
   USERNAME,
@@ -43,4 +45,6 @@ module.exports = {
   SSH_TUNNEL_USERNAME,
   TWILIO_ACCOUNT_SID,
   TWILIO_AUTH_TOKEN,
+  NEXMO_API_KEY,
+  NEXMO_API_SECRET,
 };

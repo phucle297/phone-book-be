@@ -32,4 +32,10 @@ usersRoutes.post(
   authenticate,
   userController.uploadAvatar
 );
+usersRoutes.post(
+  "/assign-company",
+  authenticate,
+  authorize("Admin"),
+  userController.assignCompany
+);
 module.exports = usersRoutes;

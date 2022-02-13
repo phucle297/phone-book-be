@@ -156,6 +156,33 @@ const uploadAvatar = async (req, res) => {
     throw error;
   }
 };
+const assignCompany = async (req, res) => {
+  try {
+    const { companyId, userId } = req.body;
+    let userToken;
+    await verifyToken(req).then((data) => (userToken = data));
+    const user = await db.Users.findOne({ where: { email: userToken.email } });
+    if (user.companyId !== companyId) {
+      return res
+        .status(400)
+        .json(400, { message: "You only can assign user to your company" });
+    }
+    const isUserExists = await db.Users.findOne({ where: { userId } });
+    if (!isUserExists) {
+      return res.status(400).json(400, { message: "User not found" });
+    }
+    const isCompanyExists = await db.Companies.findOne({
+      where: { companyId },
+    });
+    if (!isCompanyExists) {
+      return res.status(400).json(400, { message: "Company not found" });
+    }
+    await db.Users.update({ companyId }, { where: { userId: userId } });
+    return res.status(200).json(200, "User assigned");
+  } catch (error) {
+    return res.status(400).json(400, { message: error.message });
+  }
+};
 module.exports = {
   register,
   login,
@@ -164,4 +191,5 @@ module.exports = {
   editUser,
   removeUser,
   uploadAvatar,
+  assignCompany,
 };
