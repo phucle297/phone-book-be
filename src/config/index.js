@@ -23,6 +23,8 @@ const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
 const NEXMO_API_KEY = process.env.NEXMO_API_KEY;
 const NEXMO_API_SECRET = process.env.NEXMO_API_SECRET;
+const GMAIL_USERNAME = process.env.GMAIL_USERNAME;
+const GMAIL_PASSWORD = process.env.GMAIL_PASSWORD;
 module.exports = {
   DATABASE,
   USERNAME,
@@ -47,4 +49,6 @@ module.exports = {
   TWILIO_AUTH_TOKEN,
   NEXMO_API_KEY,
   NEXMO_API_SECRET,
+  GMAIL_USERNAME,
+  GMAIL_PASSWORD,
 };

@@ -1,6 +1,50 @@
 const nodemailer = require("nodemailer");
 const { verifyToken } = require("../utils/jwt");
 const db = require("../models");
+const config = require("../config");
+const aws = require("aws-sdk");
+const s3 = new aws.S3({
+  accessKeyId: config.S3_ACCESS_KEY_ID,
+  secretAccessKey: config.S3_SECRET_KEY,
+});
+const attachFile = async (req, res) => {
+  try {
+    const { buffer, originalname, mimetype } = req.file;
+    const dst = `attachedFile/${Date.now()}_${originalname}`;
+    const params = {
+      Bucket: config.S3_BUCKET_NAME,
+      Key: dst,
+      Body: buffer,
+      ContentType: mimetype,
+    };
+    s3.putObject(params, async (err, data) => {
+      if (err) {
+        return res
+          .status(400)
+          .json(400, { message: "Server error, couldn't upload" });
+      } else {
+        let url = `${config.S3_DOMAIN_NAME}/${dst}`;
+        let userToken;
+        await verifyToken(req).then((data) => (userToken = data));
+        const user = await db.Users.findOne({
+          where: { email: userToken.email },
+        });
+        const fileAttached = {
+          fileName: originalname,
+          filePath: url,
+          userId: user.userId,
+        };
+        await db.AttachedFiles.create(fileAttached);
+        url = "https://" + url.replaceAll(" ", "+");
+        return res
+          .status(201)
+          .json(201, { message: "Attach file success!", url });
+      }
+    });
+  } catch (error) {
+    throw error;
+  }
+};
 const sendMail = async (req, res) => {
   try {
     // ! Sử dụng gmail để gửi email
@@ -9,18 +53,23 @@ const sendMail = async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "phucle.2971.dd@gmail.com",
-        pass: "ws50x_SJ@",
+        user: config.GMAIL_USERNAME,
+        pass: config.GMAIL_PASSWORD,
       },
     });
     let arrUserId = [];
-    const { subject, emailContent, receivers } = req.body;
+    const { subject, emailContent, receivers, attachments } = req.body;
+
+    let arrReceiver = [];
     for (let email of receivers) {
       const user = await db.Users.findOne({ where: { email } });
-      if (!user) receivers.splice(receivers.indexOf(email), 1);
-      else arrUserId = [...arrUserId, user.userId];
+      if (user) {
+        arrUserId = [...arrUserId, user.userId];
+        arrReceiver = [...arrReceiver, email];
+      }
     }
-    const receiverString = receivers.toString();
+
+    const receiverString = arrReceiver.toString();
 
     let senderEmail;
     await verifyToken(req).then((data) => (senderEmail = data.email));
@@ -35,15 +84,18 @@ const sendMail = async (req, res) => {
         emailId: emailCreated.emailId,
       });
     }
-    const mailOptions = {
+    console.log(arrUserId);
+    const message = {
       //   from: senderEmail,
-      from: "phucle.2971.dd@gmail.com",
+      from: "phonebookaws@gmail.com",
       to: receiverString,
       subject,
       text: emailContent,
+      attachments: attachments.map((path) => {
+        return { path };
+      }),
     };
-
-    transporter.sendMail(mailOptions, (err, info) => {
+    transporter.sendMail(message, (err, info) => {
       if (err) {
         return res.status(400).json(400, err);
       } else {
@@ -55,4 +107,4 @@ const sendMail = async (req, res) => {
   }
 };
 
-module.exports = { sendMail };
+module.exports = { sendMail, attachFile };

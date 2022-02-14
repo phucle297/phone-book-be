@@ -7,7 +7,10 @@ module.exports = (sequelize) => {
         as: "userHasEmail",
       });
       Emails.hasMany(models.AttachedFiles, {
-        foreignKey: "emailId",
+        foreignKey: {
+          name: "emailId",
+          allowNull: true,
+        },
         as: "attachedFiles",
       });
     }
