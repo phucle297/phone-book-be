@@ -12,5 +12,15 @@ emailsRoutes.post(
   authenticate,
   emailController.attachFile
 );
-
+emailsRoutes.get(
+  "/get-all-emails-receive",
+  authenticate,
+  emailController.getAllEmailReceive
+);
+emailsRoutes.get(
+  "/get-all-emails-sent",
+  authenticate,
+  emailController.getAllEmailSent
+);
+emailsRoutes.get("/search/:searchContent", authenticate, emailController.search);
 module.exports = emailsRoutes;

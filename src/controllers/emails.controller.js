@@ -1,5 +1,6 @@
 const nodemailer = require("nodemailer");
 const { verifyToken } = require("../utils/jwt");
+const { Op } = require("sequelize");
 const db = require("../models");
 const config = require("../config");
 const aws = require("aws-sdk");
@@ -76,7 +77,7 @@ const sendMail = async (req, res) => {
 
     let sender = await db.Users.findOne({ where: { email: senderEmail } });
 
-    const email = { subject, emailContent, senderEmail, sender: sender.userId };
+    const email = { subject, emailContent, senderEmail, userId: sender.userId };
     const emailCreated = await db.Emails.create(email);
     for (let userId of arrUserId) {
       await db.UserHasEmail.create({
@@ -84,7 +85,6 @@ const sendMail = async (req, res) => {
         emailId: emailCreated.emailId,
       });
     }
-    console.log(arrUserId);
     const message = {
       //   from: senderEmail,
       from: "phonebookaws@gmail.com",
@@ -106,5 +106,94 @@ const sendMail = async (req, res) => {
     throw error;
   }
 };
-
-module.exports = { sendMail, attachFile };
+const getAllEmailReceive = async (req, res) => {
+  try {
+    let userToken;
+    await verifyToken(req).then((data) => (userToken = data));
+    const user = await db.Users.findOne({
+      where: { email: userToken.email },
+    });
+    const emails = await db.UserHasEmail.findAll({
+      where: {
+        userId: user.userId,
+      },
+    });
+    return res.status(200).json(200, emails);
+  } catch (error) {
+    throw error;
+  }
+};
+const getAllEmailSent = async (req, res) => {
+  try {
+    let userToken;
+    await verifyToken(req).then((data) => (userToken = data));
+    const user = await db.Users.findOne({
+      where: { email: userToken.email },
+    });
+    const emails = await db.Emails.findAll({
+      where: {
+        sender: user.userId,
+      },
+    });
+    return res.status(200).json(200, emails);
+  } catch (error) {
+    throw error;
+  }
+};
+const search = async (req, res) => {
+  try {
+    let userToken;
+    await verifyToken(req).then((data) => (userToken = data));
+    const user = await db.Users.findOne({
+      where: { email: userToken.email },
+    });
+    const { searchContent } = req.params;
+    const emails = await db.Emails.findAll({
+      where: {
+        [Op.or]: [
+          {
+            subject: {
+              [Op.like]: `%${searchContent}%`,
+            },
+          },
+          {
+            emailContent: {
+              [Op.like]: `%${searchContent}%`,
+            },
+          },
+        ],
+      },
+      // include: [
+      //   {
+      //     model: db.UserHasEmail,
+      //     where: {
+      //       userId: user.userId,
+      //     },
+      //     attribute: "userId",
+      //     as: "userHasEmail",
+      //     include: [
+      //       {
+      //         model: db.Users,
+      //         as: "users",
+      //         where: {
+      //           userId: user.userId,
+      //         },
+      //       },
+      //     ],
+      //   },
+      // ],
+      // raw: true,
+      // nest: true,
+    });
+    return res.status(200).json(200, emails);
+  } catch (error) {
+    throw error;
+  }
+};
+module.exports = {
+  sendMail,
+  attachFile,
+  getAllEmailReceive,
+  getAllEmailSent,
+  search,
+};

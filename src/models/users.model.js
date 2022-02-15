@@ -7,6 +7,27 @@ module.exports = (sequelize) => {
         foreignKey: "companyId",
         as: "companies",
       });
+      Users.hasMany(models.UserHasEmail, {
+        foreignKey: {
+          name: "userId",
+          allowNull: true,
+        },
+        as: "userHasEmails",
+      });
+      Users.hasMany(models.UserHasSms, {
+        foreignKey: {
+          name: "userId",
+          allowNull: true,
+        },
+        as: "userHasSms",
+      });
+      Users.hasMany(models.Emails, {
+        foreignKey: {
+          name: "userId",
+          allowNull: true,
+        },
+        as: "emails",
+      });
     }
   }
   Users.init(

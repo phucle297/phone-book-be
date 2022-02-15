@@ -13,6 +13,10 @@ module.exports = (sequelize) => {
         },
         as: "attachedFiles",
       });
+      Emails.belongsTo(models.Users, {
+        foreignKey: "userId",
+        as: "users",
+      });
     }
   }
   Emails.init(
@@ -32,9 +36,9 @@ module.exports = (sequelize) => {
         type: DataTypes.STRING,
         field: "email_content",
       },
-      sender: {
-        type: DataTypes.STRING,
-        allowNull: false,
+      userId: {
+        type: DataTypes.INTEGER,
+        field: "sender",
       },
     },
     {
