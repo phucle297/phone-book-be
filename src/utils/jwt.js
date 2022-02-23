@@ -5,6 +5,7 @@ const EXPIRES_IN = 60 * 60 * 24 * 30; //? seconds*minutes*hours*days
 
 const generateToken = (user) => {
   const payload = {
+    id: user.userId,
     email: user.email,
     role: user.role,
   };
