@@ -49,7 +49,7 @@ const attachFile = async (req, res) => {
 const sendMail = async (req, res) => {
   try {
     // ! Sử dụng gmail để gửi email
-    // ! Cần cho phép "Imap" và "Quyền truy cập của ứng dụng kém an toàn"
+    // ! Người gửi cần cho phép "Imap" và "Quyền truy cập của ứng dụng kém an toàn"
     // ! Chỉ người nhận nào có trong db mới có thể nhận email
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -185,7 +185,38 @@ const search = async (req, res) => {
       // raw: true,
       // nest: true,
     });
-    return res.status(200).json(200, emails);
+    const searchByEmail = await db.Users.findAll({
+      where: {
+        [Op.and]: [
+          {
+            companyId: user.companyId,
+          },
+          {
+            [Op.or]: [
+              {
+                email: {
+                  [Op.like]: `%${searchContent}%`,
+                },
+              },
+              {
+                name: {
+                  [Op.like]: `%${searchContent}%`,
+                },
+              },
+              {
+                phone: {
+                  [Op.like]: `%${searchContent}%`,
+                },
+              },
+            ],
+          },
+        ],
+      },
+      attributes: { exclude: ["password"] },
+    });
+    return res
+      .status(200)
+      .json(200, { emails: emails, users: searchByEmail });
   } catch (error) {
     throw error;
   }
