@@ -3,7 +3,10 @@ module.exports = (sequelize) => {
   class Companies extends Model {
     static associate(models) {
       Companies.hasMany(models.Users, {
-        foreignKey: "companyId",
+        foreignKey: {
+          name: "companyId",
+          allowNull: true,
+        },
         as: "users",
       });
     }

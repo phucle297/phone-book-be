@@ -15,6 +15,7 @@ module.exports = (sequelize) => {
       });
       Emails.belongsTo(models.Users, {
         foreignKey: "userId",
+        allowNull: true,
         as: "users",
       });
     }

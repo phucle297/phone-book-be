@@ -28,6 +28,13 @@ module.exports = (sequelize) => {
         },
         as: "emails",
       });
+      Users.hasMany(models.Sms, {
+        foreignKey: {
+          name: "userId",
+          allowNull: true,
+        },
+        as: "sms",
+      });
     }
   }
   Users.init(

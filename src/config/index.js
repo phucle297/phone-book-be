@@ -25,6 +25,7 @@ const NEXMO_API_KEY = process.env.NEXMO_API_KEY;
 const NEXMO_API_SECRET = process.env.NEXMO_API_SECRET;
 const GMAIL_USERNAME = process.env.GMAIL_USERNAME;
 const GMAIL_PASSWORD = process.env.GMAIL_PASSWORD;
+const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER;
 module.exports = {
   DATABASE,
   USERNAME,
@@ -51,4 +52,5 @@ module.exports = {
   NEXMO_API_SECRET,
   GMAIL_USERNAME,
   GMAIL_PASSWORD,
+  TWILIO_PHONE_NUMBER,
 };

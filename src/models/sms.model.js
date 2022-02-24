@@ -6,6 +6,11 @@ module.exports = (sequelize) => {
         foreignKey: "smsId",
         as: "userHasSms",
       });
+      Sms.belongsTo(models.Users, {
+        foreignKey: "userId",
+        allowNull: true,
+        as: "users",
+      });
     }
   }
   Sms.init(
@@ -17,19 +22,14 @@ module.exports = (sequelize) => {
         autoIncrement: true,
         primaryKey: true,
       },
-      sender: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
       smsContent: {
         type: DataTypes.STRING,
         allowNull: false,
         field: "sms_content",
       },
       userId: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        as: "sender",
+        type: DataTypes.INTEGER,
+        field: "sender",
       },
     },
     {

@@ -19,7 +19,7 @@ const getAll = async (req, res) => {
 };
 const register = async (req, res) => {
   try {
-    // for (let i = 0; i < 10; i++) {
+    // for (let i = 0; i < 100; i++) {
     //   const email = `user${i}@gmail.com`;
     //   const name = `user${i}`;
     //   const address = `address ${i}`;
