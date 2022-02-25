@@ -41,9 +41,10 @@ const sendSms = async (req, res) => {
           smsId: sms.smsId,
         });
       })
-      .catch((err) => arrNumErr.push(receiver));
+      .catch((err) => {});
   }
-  if (arrNumErr.length === receivers.length)
+  arrNumErr = receivers.filter((receiver) => !arrNumSuccess.includes(receiver));
+  if (arrNumSuccess.length < 1)
     return res.status(400).json(400, "SMS can not be sent");
   return res
     .status(201)
@@ -105,7 +106,7 @@ const search = async (req, res) => {
     let emailAccountToken;
     await verifyToken(req).then((data) => (emailAccountToken = data.email));
     let user = await db.Users.findOne({ where: { email: emailAccountToken } });
-    const {searchContent} = req.params;
+    const { searchContent } = req.params;
     const sms = await db.Sms.findAll({
       where: {
         smsContent: {

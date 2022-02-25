@@ -4,37 +4,39 @@ const fs = require("fs");
 const path = require("path");
 const mysql = require("mysql2/promise");
 
+// const sequelize = new Sequelize(
+//   config.DATABASE,
+//   config.USERNAME,
+//   config.PASSWORD,
+//   {
+//     host: config.HOST,
+//     dialect: config.DIALECT,
+//     port: config.PORT,
+//     query: {
+//       raw: true,
+//     },
+//   }
+// );
+
 const sequelize = new Sequelize(
-  config.DATABASE,
-  config.USERNAME,
-  config.PASSWORD,
+  config.RDS_DB_NAME,
+  config.RDS_USERNAME,
+  config.RDS_PASSWORD,
   {
-    host: config.HOST,
+    host: config.RDS_HOSTNAME,
     dialect: config.DIALECT,
-    port: config.PORT,
+    port: config.RDS_PORT,
+    logging: console.log,
+    maxConcurrentQueries: 100,
+    dialectOptions: {
+      ssl: "Amazon RDS",
+    },
+    pool: { maxConnections: 20, maxIdleTime: 30 },
     query: {
       raw: true,
     },
   }
 );
-
-// const sequelize = new Sequelize(
-//   config.RDS_DB_NAME,
-//   config.RDS_USERNAME,
-//   config.RDS_PASSWORD,
-//   {
-//     host: config.RDS_HOSTNAME,
-//     dialect: config.DIALECT,
-//     port: config.RDS_PORT,
-//     logging: console.log,
-//     maxConcurrentQueries: 100,
-//     dialectOptions: {
-//       ssl: "Amazon RDS",
-//     },
-//     pool: { maxConnections: 20, maxIdleTime: 30 },
-//     language: "en",
-//   }
-// );
 
 const db = {};
 
