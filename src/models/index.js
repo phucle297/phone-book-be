@@ -17,7 +17,7 @@ const mysql = require("mysql2/promise");
 //     },
 //   }
 // );
-
+const rdsCa = fs.readFileSync(__dirname + "/phone-book.pem");
 const sequelize = new Sequelize(
   config.RDS_DB_NAME,
   config.RDS_USERNAME,
@@ -29,7 +29,11 @@ const sequelize = new Sequelize(
     logging: console.log,
     maxConcurrentQueries: 100,
     dialectOptions: {
-      ssl: "Amazon RDS",
+      // ssl: "Amazon RDS",
+      ssl: {
+        rejectUnauthorized: false,
+        ca: [rdsCa],
+      },
     },
     pool: { maxConnections: 20, maxIdleTime: 30 },
     query: {
