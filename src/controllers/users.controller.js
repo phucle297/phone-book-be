@@ -176,7 +176,7 @@ const uploadAvatar = async (req, res) => {
           attributes: { exclude: ["password"] },
         });
         const userUpdated = { ...user, avatar: url };
-        await db.Users.update(userUpdated, { where: { userId: user.userId } });
+        await db.Users.update(userUpdated, { where: { userId: user.id } });
         return res
           .status(201)
           .json(201, { message: "Add avatar success!", url });
