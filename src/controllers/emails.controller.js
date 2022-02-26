@@ -43,7 +43,7 @@ const attachFile = async (req, res) => {
       }
     });
   } catch (error) {
-    throw error;
+    return res.status(400).json(400, { message: error.message });
   }
 };
 const sendMail = async (req, res) => {
@@ -103,7 +103,7 @@ const sendMail = async (req, res) => {
       }
     });
   } catch (error) {
-    throw error;
+    return res.status(400).json(400, { message: error.message });
   }
 };
 const getAllEmailReceive = async (req, res) => {
@@ -120,7 +120,7 @@ const getAllEmailReceive = async (req, res) => {
     });
     return res.status(200).json(200, emails);
   } catch (error) {
-    throw error;
+    return res.status(400).json(400, { message: error.message });
   }
 };
 const getAllEmailSent = async (req, res) => {
@@ -137,7 +137,7 @@ const getAllEmailSent = async (req, res) => {
     });
     return res.status(200).json(200, emails);
   } catch (error) {
-    throw error;
+    return res.status(400).json(400, { message: error.message });
   }
 };
 const search = async (req, res) => {
@@ -214,11 +214,9 @@ const search = async (req, res) => {
       },
       attributes: { exclude: ["password"] },
     });
-    return res
-      .status(200)
-      .json(200, { emails: emails, users: searchByEmail });
+    return res.status(200).json(200, { emails: emails, users: searchByEmail });
   } catch (error) {
-    throw error;
+    return res.status(400).json(400, { message: error.message });
   }
 };
 module.exports = {

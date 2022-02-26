@@ -120,7 +120,7 @@ const uploadImage = async (req, res) => {
       }
     });
   } catch (error) {
-    throw error;
+    return res.status(400).json(400, { message: error.message });
   }
 };
 module.exports = {

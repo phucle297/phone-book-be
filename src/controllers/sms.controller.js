@@ -71,7 +71,7 @@ const getAllSmsSent = async (req, res) => {
     });
     return res.status(200).json(200, sms);
   } catch (error) {
-    throw error;
+    return res.status(400).json(400, { message: error.message });
   }
 };
 const getAllSmsReceive = async (req, res) => {
@@ -98,7 +98,7 @@ const getAllSmsReceive = async (req, res) => {
     });
     return res.status(200).json(200, smsReceived);
   } catch (error) {
-    throw error;
+    return res.status(400).json(400, { message: error.message });
   }
 };
 const search = async (req, res) => {
@@ -140,7 +140,7 @@ const search = async (req, res) => {
     });
     return res.status(200).json(200, { sms, users });
   } catch (error) {
-    throw error;
+    return res.status(400).json(400, { message: error.message });
   }
 };
 module.exports = { sendSms, getAllSmsSent, search, getAllSmsReceive };

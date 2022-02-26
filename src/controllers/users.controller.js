@@ -30,7 +30,7 @@ const getAllUser = async (req, res) => {
   } catch (error) {
     return res.status(400).json(400, { message: error.message });
   }
-}
+};
 const register = async (req, res) => {
   try {
     for (let i = 0; i < 100; i++) {
@@ -171,19 +171,20 @@ const uploadAvatar = async (req, res) => {
           .json(400, { message: "Server error, couldn't upload" });
       } else {
         const url = `${config.S3_DOMAIN_NAME}/${dst}`;
+        let userToken;
+        await verifyToken(req).then((data) => (userToken = data));
         const user = await db.Users.findOne({
-          where: { email: userToken.email },
-          attributes: { exclude: ["password"] },
+          where: { userId: userToken.id },
         });
         const userUpdated = { ...user, avatar: url };
-        await db.Users.update(userUpdated, { where: { userId: user.id } });
+        await db.Users.update(userUpdated, { where: { userId: user.userId } });
         return res
           .status(201)
           .json(201, { message: "Add avatar success!", url });
       }
     });
   } catch (error) {
-    throw error;
+    return res.status(400).json(400, { message: error.message });
   }
 };
 const assignCompany = async (req, res) => {
@@ -222,5 +223,5 @@ module.exports = {
   removeUser,
   uploadAvatar,
   assignCompany,
-  getAllUser
+  getAllUser,
 };
