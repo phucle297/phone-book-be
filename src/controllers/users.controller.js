@@ -17,35 +17,49 @@ const getAll = async (req, res) => {
     return res.status(400).json(400, { message: error.message });
   }
 };
+const getAllUser = async (req, res) => {
+  try {
+    let userToken;
+    await verifyToken(req).then((data) => (userToken = data));
+    const user = await db.Users.findOne({ where: { userId: userToken.id } });
+    const users = await db.Users.findAll({
+      where: { companyId: user.companyId },
+      attributes: { exclude: ["password"] },
+    });
+    return res.status(200).json(200, users);
+  } catch (error) {
+    return res.status(400).json(400, { message: error.message });
+  }
+}
 const register = async (req, res) => {
   try {
-    // for (let i = 0; i < 100; i++) {
-    //   const email = `user${i}@gmail.com`;
-    //   const name = `user${i}`;
-    //   const address = `address ${i}`;
-    //   const password = `user1234`;
-    //   const companyId = (i % 3) + 1;
-    //   let phone;
-    //   if (i < 10) phone = `080812300${i}`;
-    //   else if (i < 100) phone = `08081230${i}`;
-    //   await db.Users.create({
-    //     name,
-    //     phone,
-    //     email,
-    //     password,
-    //     companyId,
-    //     address,
-    //   });
-    // }
-    const { email, phone } = req.body;
-    const isEmailExists = await db.Users.findOne({ where: { email } });
-    const isPhoneExists = await db.Users.findOne({ where: { phone } });
-    if (isEmailExists || isPhoneExists) {
-      return res
-        .status(400)
-        .json(400, { message: "Email or Phone number already exists" });
+    for (let i = 0; i < 100; i++) {
+      const email = `user${i}@gmail.com`;
+      const name = `user${i}`;
+      const address = `address ${i}`;
+      const password = `user1234`;
+      const companyId = (i % 3) + 1;
+      let phone;
+      if (i < 10) phone = `080812300${i}`;
+      else if (i < 100) phone = `08081230${i}`;
+      await db.Users.create({
+        name,
+        phone,
+        email,
+        password,
+        companyId,
+        address,
+      });
     }
-    await db.Users.create(req.body);
+    // const { email, phone } = req.body;
+    // const isEmailExists = await db.Users.findOne({ where: { email } });
+    // const isPhoneExists = await db.Users.findOne({ where: { phone } });
+    // if (isEmailExists || isPhoneExists) {
+    //   return res
+    //     .status(400)
+    //     .json(400, { message: "Email or Phone number already exists" });
+    // }
+    // await db.Users.create(req.body);
     return res.status(201).json(201, "User created");
   } catch (error) {
     return res.status(400).json(400, { message: error.message });
@@ -157,8 +171,6 @@ const uploadAvatar = async (req, res) => {
           .json(400, { message: "Server error, couldn't upload" });
       } else {
         const url = `${config.S3_DOMAIN_NAME}/${dst}`;
-        let userToken;
-        await verifyToken(req).then((data) => (userToken = data));
         const user = await db.Users.findOne({
           where: { email: userToken.email },
           attributes: { exclude: ["password"] },
@@ -210,4 +222,5 @@ module.exports = {
   removeUser,
   uploadAvatar,
   assignCompany,
+  getAllUser
 };

@@ -14,6 +14,11 @@ usersRoutes.get(
   userController.getAll
 );
 usersRoutes.get(
+  "/get-all-user",
+  authenticate,
+  userController.getAllUser
+);
+usersRoutes.get(
   "/get-by-id/:userId",
   authenticate,
   authorize("Admin"),
