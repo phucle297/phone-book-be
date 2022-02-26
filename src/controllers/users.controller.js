@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const { generateToken, verifyToken } = require("../utils/jwt");
 const config = require("../config");
 const aws = require("aws-sdk");
+const { TrunkContext } = require("twilio/lib/rest/trunking/v1/trunk");
 const s3 = new aws.S3({
   accessKeyId: config.S3_ACCESS_KEY_ID,
   secretAccessKey: config.S3_SECRET_KEY,
@@ -27,6 +28,16 @@ const getAllUser = async (req, res) => {
       attributes: { exclude: ["password"] },
     });
     return res.status(200).json(200, users);
+  } catch (error) {
+    return res.status(400).json(400, { message: error.message });
+  }
+};
+const getMyData = async (req, res) => {
+  try {
+    let userToken;
+    await verifyToken(req).then((data) => (userToken = data));
+    const user = await db.Users.findOne({ where: { userId: userToken.id } });
+    return res.status(200).json(200, user);
   } catch (error) {
     return res.status(400).json(400, { message: error.message });
   }
@@ -224,4 +235,5 @@ module.exports = {
   uploadAvatar,
   assignCompany,
   getAllUser,
+  getMyData,
 };

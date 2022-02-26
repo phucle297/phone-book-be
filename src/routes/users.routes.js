@@ -24,6 +24,7 @@ usersRoutes.get(
   authorize("Admin"),
   userController.getById
 );
+usersRoutes.get("get-my-data", authenticate, userController.getMyData);
 usersRoutes.put("/edit", authenticate, userController.editUser);
 usersRoutes.delete(
   "/delete/:userId",
