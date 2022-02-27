@@ -13,11 +13,7 @@ usersRoutes.get(
   authorize("Admin"),
   userController.getAll
 );
-usersRoutes.get(
-  "/get-all-user",
-  authenticate,
-  userController.getAllUser
-);
+usersRoutes.get("/get-all-user", authenticate, userController.getAllUser);
 usersRoutes.get(
   "/get-by-id/:userId",
   authenticate,
@@ -44,4 +40,5 @@ usersRoutes.post(
   authorize("Admin"),
   userController.assignCompany
 );
+usersRoutes.get("/search/:searchContent", authenticate, userController.search);
 module.exports = usersRoutes;

@@ -4,6 +4,7 @@ const { generateToken, verifyToken } = require("../utils/jwt");
 const config = require("../config");
 const aws = require("aws-sdk");
 const { TrunkContext } = require("twilio/lib/rest/trunking/v1/trunk");
+const { Op } = require("sequelize");
 const s3 = new aws.S3({
   accessKeyId: config.S3_ACCESS_KEY_ID,
   secretAccessKey: config.S3_SECRET_KEY,
@@ -225,6 +226,51 @@ const assignCompany = async (req, res) => {
     return res.status(400).json(400, { message: error.message });
   }
 };
+const search = async (req, res) => {
+  try {
+    let emailAccountToken;
+    await verifyToken(req).then((data) => (emailAccountToken = data.email));
+    let user = await db.Users.findOne({ where: { email: emailAccountToken } });
+    const { searchContent } = req.params;
+    const users = await db.Users.findAll({
+      where: {
+        [Op.and]: [
+          {
+            companyId: user.companyId,
+          },
+          {
+            [Op.or]: [
+              {
+                userId: {
+                  [Op.like]: `%${searchContent}%`,
+                },
+              },
+              {
+                email: {
+                  [Op.like]: `%${searchContent}%`,
+                },
+              },
+              {
+                phone: {
+                  [Op.like]: `%${searchContent}%`,
+                },
+              },
+              {
+                address: {
+                  [Op.like]: `%${searchContent}%`,
+                },
+              },
+            ],
+          },
+        ],
+      },
+      attributes: { exclude: ["password"] },
+    });
+    return res.status(200).json(200, users);
+  } catch (error) {
+    res.status(400).json(400, { message: error.message });
+  }
+};
 module.exports = {
   register,
   login,
@@ -236,4 +282,5 @@ module.exports = {
   assignCompany,
   getAllUser,
   getMyData,
+  search,
 };
