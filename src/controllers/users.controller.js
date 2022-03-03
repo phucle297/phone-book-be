@@ -141,7 +141,7 @@ const editUser = async (req, res) => {
       const hash = bcrypt.hashSync(password, salt);
       req.body.password = hash;
     }
-    if (user.companyId !== companyId) {
+    if (user.companyId !== companyId && companyId) {
       return res.status(400).json(400, { message: "You can't change company" });
     }
     await db.Users.update(req.body, { where: { userId } });
