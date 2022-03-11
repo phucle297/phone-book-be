@@ -112,7 +112,8 @@ const getById = async (req, res) => {
 };
 const editUser = async (req, res) => {
   try {
-    const { userId, email, phone, password, companyId, role } = req.body;
+    const { userId, name, email, phone, password, companyId, role } = req.body;
+    let newPass;
     const user = await db.Users.findOne({ where: { userId } });
     if (!user) {
       return res.status(400).json(400, { message: "User not found" });
@@ -139,12 +140,20 @@ const editUser = async (req, res) => {
     if (password) {
       const salt = bcrypt.genSaltSync(10);
       const hash = bcrypt.hashSync(password, salt);
-      req.body.password = hash;
+      newPass = hash;
     }
     if (user.companyId !== companyId && companyId) {
       return res.status(400).json(400, { message: "You can't change company" });
     }
-    await db.Users.update(req.body, { where: { userId } });
+    const userUpdated = {
+      name,
+      email,
+      phone,
+      password,
+      companyId,
+      password: newPass,
+    };
+    await db.Users.update(userUpdated, { where: { userId } });
     return res.status(200).json(200, "User updated");
   } catch (error) {
     return res.status(400).json(400, { message: error.message });
