@@ -67,7 +67,7 @@ module.exports = (sequelize) => {
       },
       password: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
         set(value) {
           //? Use bcrypt to hash the password
           const hashedPassword = bcrypt.hashSync(value, 12);
