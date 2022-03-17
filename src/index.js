@@ -5,6 +5,7 @@ const reponseInterceptor = require("./middleware/interceptors");
 const http = require("http");
 const https = require("https");
 const fs = require("fs");
+
 const app = express();
 
 app.use(express.json());
@@ -18,13 +19,12 @@ app.get("/ping", (req, res) => {
 });
 
 // Set up http and https
-
 const httpServer = http.createServer(app);
 const httpsServer = https.createServer(
   {
-    ca: fs.readFileSync("ca_bundle.crt"),
-    key: fs.readFileSync("private.key"),
-    cert: fs.readFileSync("certificate.crt"),
+    ca: fs.readFileSync(`${__dirname}/ca_bundle.crt`),
+    key: fs.readFileSync(`${__dirname}/private.key`),
+    cert: fs.readFileSync(`${__dirname}/certificate.crt`),
   },
   app
 );
