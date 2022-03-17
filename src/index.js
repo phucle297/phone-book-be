@@ -4,6 +4,7 @@ const rootRouter = require("./routes");
 const reponseInterceptor = require("./middleware/interceptors");
 const http = require("http");
 const https = require("https");
+const fs = require("fs");
 const app = express();
 
 app.use(express.json());
