@@ -29,10 +29,10 @@ const httpsServer = https.createServer(
   app
 );
 
-httpServer.listen(80, () => {
+httpServer.listen(8080, () => {
   console.log("HTTP Server running on port 80");
 });
 
-httpsServer.listen(443, () => {
+httpsServer.listen(8443, () => {
   console.log("HTTPS Server running on port 443");
 });
