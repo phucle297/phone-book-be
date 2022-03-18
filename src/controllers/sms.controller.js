@@ -61,12 +61,18 @@ const getAllSmsSent = async (req, res) => {
       where: { userId: user.userId },
       include: [
         {
-          model: db.Users,
-          as: "users",
-          attributes: ["userId", "name", "email", "address", "phone"],
+          model: db.UserHasSms,
+          as: "userHasSms",
+          attributes: [],
+          include: [
+            {
+              model: db.Users,
+              as: "users",
+              attributes: ["userId", "name", "email", "address", "phone"],
+            },
+          ],
         },
       ],
-
       raw: true,
     });
     return res.status(200).json(200, sms);
@@ -82,16 +88,19 @@ const getAllSmsReceive = async (req, res) => {
 
     const smsReceived = await db.UserHasSms.findAll({
       where: { userId: user.userId },
+      attributes: ["smsId", "created_at"],
       include: [
         {
           model: db.Sms,
           as: "sms",
-          attributes: ["smsId", "smsContent"],
-        },
-        {
-          model: db.Users,
-          as: "users",
-          attributes: ["userId", "name", "email", "address", "phone"],
+          attributes: ["smsContent"],
+          include: [
+            {
+              model: db.Users,
+              as: "users",
+              attributes: ["userId", "name", "email", "address", "phone"],
+            },
+          ],
         },
       ],
       raw: true,
