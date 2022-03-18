@@ -86,7 +86,6 @@ const sendMail = async (req, res) => {
       });
     }
     const message = {
-      //   from: senderEmail,
       from: "phonebookaws@gmail.com",
       to: receiverString,
       subject,
@@ -163,27 +162,6 @@ const search = async (req, res) => {
           },
         ],
       },
-      // include: [
-      //   {
-      //     model: db.UserHasEmail,
-      //     where: {
-      //       userId: user.userId,
-      //     },
-      //     attribute: "userId",
-      //     as: "userHasEmail",
-      //     include: [
-      //       {
-      //         model: db.Users,
-      //         as: "users",
-      //         where: {
-      //           userId: user.userId,
-      //         },
-      //       },
-      //     ],
-      //   },
-      // ],
-      // raw: true,
-      // nest: true,
     });
     const searchByEmail = await db.Users.findAll({
       where: {

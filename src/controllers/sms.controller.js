@@ -63,7 +63,7 @@ const getAllSmsSent = async (req, res) => {
         {
           model: db.Users,
           as: "users",
-          attributes: ["userId", "name", "email", "address"],
+          attributes: ["userId", "name", "email", "address", "phone"],
         },
       ],
 
@@ -91,7 +91,7 @@ const getAllSmsReceive = async (req, res) => {
         {
           model: db.Users,
           as: "users",
-          attributes: ["userId", "name", "email", "address"],
+          attributes: ["userId", "name", "email", "address", "phone"],
         },
       ],
       raw: true,
