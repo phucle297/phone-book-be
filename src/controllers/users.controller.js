@@ -146,15 +146,14 @@ const editUser = async (req, res) => {
     if (user.companyId !== companyId && companyId) {
       return res.status(400).json(400, { message: "You can't change company" });
     }
-    const userUpdated = {
-      name,
-      email,
-      phone,
-      password,
-      companyId,
-      address,
-      password: newPass,
-    };
+    let userUpdated = {};
+    if (name) userUpdated.name = name;
+    if (email) userUpdated.email = email;
+    if (phone) userUpdated.phone = phone;
+    if (password) userUpdated.password = newPass;
+    if (companyId) userUpdated.companyId = companyId;
+    if (address) userUpdated.address = address;
+
     await db.Users.update(userUpdated, { where: { userId } });
     return res.status(200).json(200, "User updated");
   } catch (error) {
