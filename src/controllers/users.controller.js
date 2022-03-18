@@ -112,8 +112,17 @@ const getById = async (req, res) => {
 };
 const editUser = async (req, res) => {
   try {
-    const { userId, name, email, phone, password, companyId, role, address } =
-      req.body;
+    const {
+      userId,
+      name,
+      email,
+      phone,
+      password,
+      companyId,
+      role,
+      address,
+      avatar,
+    } = req.body;
     let newPass;
     const user = await db.Users.findOne({ where: { userId } });
     if (!user) {
@@ -153,6 +162,7 @@ const editUser = async (req, res) => {
     if (password) userUpdated.password = newPass;
     if (companyId) userUpdated.companyId = companyId;
     if (address) userUpdated.address = address;
+    if (avatar) userUpdated.avatar = avatar;
 
     await db.Users.update(userUpdated, { where: { userId } });
     return res.status(200).json(200, "User updated");
