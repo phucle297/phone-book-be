@@ -90,7 +90,26 @@ const sendMail = async (req, res) => {
       to: receiverString,
       subject,
       text: emailContent,
-      attachments: attachments.map((path) => {
+      attachments: attachments.map(async (path) => {
+        path = path.replaceAll("https://", "");
+        path = path.replaceAll("+", " ");
+        const fileAttached = await db.AttachedFiles.findOne({
+          where: {
+            filePath: { [Op.like]: `%${path}%` },
+            userId: sender.userId,
+          },
+          raw: true,
+          nest: true,
+        });
+        if (fileAttached) {
+          fileAttached.emailId = emailCreated.dataValues.emailId;
+          await db.AttachedFiles.update(fileAttached, {
+            where: {
+              filePath: { [Op.like]: `%${path}%` },
+              userId: sender.userId,
+            },
+          });
+        }
         return { path };
       }),
     };
@@ -112,12 +131,41 @@ const getAllEmailReceive = async (req, res) => {
     const user = await db.Users.findOne({
       where: { email: userToken.email },
     });
-    const emails = await db.UserHasEmail.findAll({
+    const emailsReceived = await db.UserHasEmail.findAll({
       where: {
         userId: user.userId,
       },
+      attributes: ["emailId", "created_at"],
+      include: [
+        {
+          model: db.Emails,
+          as: "emails",
+          attributes: ["subject", "emailContent"],
+          include: [
+            {
+              model: db.Users,
+              as: "users",
+              attributes: [
+                "userId",
+                "name",
+                "email",
+                "address",
+                "phone",
+                "avatar",
+              ],
+            },
+            {
+              model: db.AttachedFiles,
+              as: "attachedFiles",
+              attributes: ["fileName", "filePath"],
+            },
+          ],
+        },
+      ],
+      raw: true,
+      nest: true,
     });
-    return res.status(200).json(200, emails);
+    return res.status(200).json(200, emailsReceived);
   } catch (error) {
     return res.status(400).json(400, { message: error.message });
   }
