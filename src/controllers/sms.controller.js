@@ -136,6 +136,34 @@ const search = async (req, res) => {
           [Op.like]: `%${searchContent}%`,
         },
       },
+      include: [
+        {
+          model: db.Users,
+          as: "users",
+          attributes: ["userId", "name", "email", "address", "phone", "avatar"],
+        },
+        {
+          model: db.UserHasSms,
+          as: "userHasSms",
+          attributes: [],
+          include: [
+            {
+              model: db.Users,
+              as: "users",
+              attributes: [
+                "userId",
+                "name",
+                "email",
+                "address",
+                "phone",
+                "avatar",
+              ],
+            },
+          ],
+        },
+      ],
+      raw: true,
+      nest: true,
     });
     const users = await db.Users.findAll({
       where: {
