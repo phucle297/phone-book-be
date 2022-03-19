@@ -203,11 +203,13 @@ const uploadAvatar = async (req, res) => {
           .json(400, { message: "Server error, couldn't upload" });
       } else {
         const url = `${config.S3_DOMAIN_NAME}/${dst}`;
+
         let userToken;
         await verifyToken(req).then((data) => (userToken = data));
         const user = await db.Users.findOne({
           where: { userId: userToken.id },
         });
+        delete user.password;
         const userUpdated = { ...user, avatar: url };
         await db.Users.update(userUpdated, { where: { userId: user.userId } });
         return res
