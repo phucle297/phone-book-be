@@ -165,7 +165,26 @@ const getAllEmailReceive = async (req, res) => {
       raw: true,
       nest: true,
     });
-    return res.status(200).json(200, emailsReceived);
+    let result = [];
+    const setEmailId = new Set();
+    for (let email of emailsReceived) {
+      if (!setEmailId.has(email.emailId)) {
+        setEmailId.add(email.emailId);
+        result = [...result, email];
+      } else {
+        const attachments = await db.AttachedFiles.findAll({
+          where: {
+            emailId: email.emailId,
+          },
+          attributes: ["fileName", "filePath"],
+        });
+        const index = result.findIndex(
+          (item) => item.emailId === email.emailId
+        );
+        result[index].emails.attachedFiles = attachments;
+      }
+    }
+    return res.status(200).json(200, result);
   } catch (error) {
     return res.status(400).json(400, { message: error.message });
   }
@@ -177,9 +196,9 @@ const getAllEmailSent = async (req, res) => {
     const user = await db.Users.findOne({
       where: { email: userToken.email },
     });
-    const emails = await db.Emails.findAll({
+    const emailsSent = await db.Emails.findAll({
       where: {
-        sender: user.userId,
+        userId: user.userId,
       },
       include: [
         {
@@ -210,7 +229,26 @@ const getAllEmailSent = async (req, res) => {
       raw: true,
       nest: true,
     });
-    return res.status(200).json(200, emails);
+    let result = [];
+    const setEmailId = new Set();
+    for (let email of emailsSent) {
+      if (!setEmailId.has(email.emailId)) {
+        setEmailId.add(email.emailId);
+        result = [...result, email];
+      } else {
+        const attachments = await db.AttachedFiles.findAll({
+          where: {
+            emailId: email.emailId,
+          },
+          attributes: ["fileName", "filePath"],
+        });
+        const index = result.findIndex(
+          (item) => item.emailId === email.emailId
+        );
+        result[index].attachedFiles = attachments;
+      }
+    }
+    return res.status(200).json(200, result);
   } catch (error) {
     return res.status(400).json(400, { message: error.message });
   }
