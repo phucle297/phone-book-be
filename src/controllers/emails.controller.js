@@ -181,6 +181,34 @@ const getAllEmailSent = async (req, res) => {
       where: {
         sender: user.userId,
       },
+      include: [
+        {
+          model: db.UserHasEmail,
+          as: "userHasEmail",
+          attributes: [],
+          include: [
+            {
+              model: db.Users,
+              as: "users",
+              attributes: [
+                "userId",
+                "name",
+                "email",
+                "address",
+                "phone",
+                "avatar",
+              ],
+            },
+          ],
+        },
+        {
+          model: db.AttachedFiles,
+          as: "attachedFiles",
+          attributes: ["fileName", "filePath"],
+        },
+      ],
+      raw: true,
+      nest: true,
     });
     return res.status(200).json(200, emails);
   } catch (error) {
