@@ -165,6 +165,33 @@ const search = async (req, res) => {
       raw: true,
       nest: true,
     });
+    let result = [];
+    const setSmsId = new Set();
+    for (item of sms) {
+      if (!setSmsId.has(item.smsId)) {
+        setSmsId.add(item.smsId);
+        result = [...result, item];
+      } else {
+        const allUserHasSms = await db.UserHasSms.findAll({
+          where: {
+            smsId: item.smsId,
+          },
+          attributes: [],
+          include: [
+            {
+              model: db.Users,
+              as: "users",
+              attributes: ["name", "email", "address", "phone", "avatar"],
+            },
+          ],
+          raw: true,
+          nest: true,
+        });
+        const index = result.findIndex((attr) => attr.smsId === item.smsId);
+        result[index].userHasSms = allUserHasSms;
+      }
+    }
+
     const users = await db.Users.findAll({
       where: {
         [Op.and]: [
@@ -189,7 +216,7 @@ const search = async (req, res) => {
       },
       attributes: { exclude: ["password"] },
     });
-    return res.status(200).json(200, { sms, users });
+    return res.status(200).json(200, { sms: result, users });
   } catch (error) {
     return res.status(400).json(400, { message: error.message });
   }

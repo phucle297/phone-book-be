@@ -276,7 +276,71 @@ const search = async (req, res) => {
           },
         ],
       },
+      include: [
+        {
+          model: db.Users,
+          as: "users",
+          attributes: ["name", "email", "address", "phone", "avatar"],
+        },
+        {
+          model: db.UserHasEmail,
+          as: "userHasEmail",
+          attributes: [],
+          include: [
+            {
+              model: db.Users,
+              as: "users",
+              attributes: ["name", "email", "address", "phone", "avatar"],
+            },
+          ],
+        },
+        {
+          model: db.AttachedFiles,
+          as: "attachedFiles",
+          attributes: ["fileName", "filePath"],
+        },
+      ],
+      raw: true,
+      nest: true,
     });
+    const setEmailId = new Set();
+    let result = [];
+    for (let email of emails) {
+      if (!setEmailId.has(email.emailId)) {
+        setEmailId.add(email.emailId);
+        result = [...result, email];
+      } else {
+        const allUserHasEmail = await db.UserHasEmail.findAll({
+          where: {
+            emailId: email.emailId,
+          },
+          attributes: [],
+          include: [
+            {
+              model: db.Users,
+              as: "users",
+              attributes: ["name", "email", "address", "phone", "avatar"],
+            },
+          ],
+          raw: true,
+          nest: true,
+        });
+        const attachments = await db.AttachedFiles.findAll({
+          where: {
+            emailId: email.emailId,
+          },
+          attributes: ["fileName", "filePath"],
+          raw: true,
+          nest: true,
+        });
+        const index = result.findIndex(
+          (item) => item.emailId === email.emailId
+        );
+        result[index].attachedFiles = attachments;
+        result[index].userHasEmail = allUserHasEmail;
+      }
+    }
+
     const searchByEmail = await db.Users.findAll({
       where: {
         [Op.and]: [
@@ -306,7 +370,7 @@ const search = async (req, res) => {
       },
       attributes: { exclude: ["password"] },
     });
-    return res.status(200).json(200, { emails: emails, users: searchByEmail });
+    return res.status(200).json(200, { emails: result, users: searchByEmail });
   } catch (error) {
     return res.status(400).json(400, { message: error.message });
   }
