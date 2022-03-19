@@ -91,6 +91,7 @@ const sendMail = async (req, res) => {
       subject,
       text: emailContent,
       attachments: attachments.map(async (path) => {
+        const refPath = path;
         path = path.replaceAll("https://", "");
         path = path.replaceAll("+", " ");
         const fileAttached = await db.AttachedFiles.findOne({
@@ -110,7 +111,7 @@ const sendMail = async (req, res) => {
             },
           });
         }
-        return { path };
+        return { path: refPath };
       }),
     };
     transporter.sendMail(message, (err, info) => {
