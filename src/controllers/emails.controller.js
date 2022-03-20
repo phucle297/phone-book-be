@@ -85,15 +85,10 @@ const sendMail = async (req, res) => {
         emailId: emailCreated.emailId,
       });
     }
-    const message = {
-      from: "phonebookaws@gmail.com",
-      to: receiverString,
-      subject,
-      text: emailContent,
-      attachments: attachments.map(async (path) => {
-        const refPath = path;
-        path = path.replaceAll("https://", "");
-        path = path.replaceAll("+", " ");
+    const asyncAttachment = await Promise.all(
+      attachments.map(async (path) => {
+        path = path.replaceAll("https://", "").replaceAll("http://", "");
+        path = path.replaceAll("+", " ").replaceAll("%20", " ");
         const fileAttached = await db.AttachedFiles.findOne({
           where: {
             filePath: { [Op.like]: `%${path}%` },
@@ -102,6 +97,7 @@ const sendMail = async (req, res) => {
           raw: true,
           nest: true,
         });
+        console.log(fileAttached);
         if (fileAttached) {
           fileAttached.emailId = emailCreated.dataValues.emailId;
           await db.AttachedFiles.update(fileAttached, {
@@ -111,8 +107,18 @@ const sendMail = async (req, res) => {
             },
           });
         }
-        return { path: refPath };
-      }),
+        return {
+          filename: fileAttached.fileName,
+          path: `https://${path.replaceAll(" ", "%20")}`,
+        };
+      })
+    );
+    const message = {
+      from: "phonebookaws@gmail.com",
+      to: receiverString,
+      subject,
+      text: emailContent,
+      attachments: asyncAttachment,
     };
     transporter.sendMail(message, (err, info) => {
       if (err) {
